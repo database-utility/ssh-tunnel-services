@@ -7,9 +7,18 @@ import NIOSSH
 public class SSHTunnel {
   private let group: EventLoopGroup
   private var serverChannel: Channel!
-  private (set) var localPort: Int = -1
   
-  public init(host: String, port: Int, username: String, privateKey: String, targetHost: String, targetPort: Int) throws {
+  public var localPort: Int = -1
+  
+  public init(
+    host: String,
+    port: Int,
+    username: String,
+    password: String?,
+    privateKey: String?,
+    targetHost: String,
+    targetPort: Int
+  ) throws {
     group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
     
     let bootstrap = ClientBootstrap(group: group)
@@ -17,7 +26,7 @@ public class SSHTunnel {
         channel.pipeline.addHandlers([
           NIOSSHHandler(
             role: .client(.init(
-              userAuthDelegate: AuthenticationDelegate(username: username, privateKey: privateKey),
+              userAuthDelegate: AuthenticationDelegate(username: username, password: password, privateKey: privateKey),
               serverAuthDelegate: AcceptAllHostKeysDelegate()
             )),
             allocator: channel.allocator,
@@ -88,7 +97,8 @@ public class SSHTunnel {
 //  }
   
   public enum Error: Swift.Error {
-    case privateKeyAuthenticationNotSupported
+    case passwordAuthenticationNotSupported
+    case publicKeyAuthenticationNotSupported
     case invalidChannelType
     case invalidData
     case other
@@ -110,31 +120,51 @@ public class SSHTunnel {
   }
   
   class AuthenticationDelegate: NIOSSHClientUserAuthenticationDelegate {
-    private let queue: DispatchQueue
-    private var username: String
-    private var privateKey: String
+    private let queue: DispatchQueue = DispatchQueue(label: "local.DatabaseUtility.ssh.AuthenticationDelegate")
     
-    init(username: String, privateKey: String) {
-      self.queue = DispatchQueue(label: "local.DatabaseUtility.ssh.AuthenticationDelegate")
+    private var username: String
+    private var password: String?
+    private var privateKey: String?
+    
+    init(username: String, password: String? = nil, privateKey: String? = nil) {
       self.username = username
+      self.password = password
       self.privateKey = privateKey
     }
     
     func nextAuthenticationType(availableMethods: NIOSSHAvailableUserAuthenticationMethods, nextChallengePromise: EventLoopPromise<NIOSSHUserAuthenticationOffer?>) {
-      guard availableMethods.contains(.publicKey) else {
-        print("Error: public key auth not supported")
-        nextChallengePromise.fail(Error.privateKeyAuthenticationNotSupported)
-        return
-      }
-      
-      let key = try! Curve25519.Signing.PrivateKey(sshpemRepresentation: privateKey)
-      
-      self.queue.async {
-        nextChallengePromise.succeed(.init(
-          username: self.username,
-          serviceName: "",
-          offer: .privateKey(.init(privateKey: .init(ed25519Key: key)))
-        ))
+      if let password = password {
+        guard availableMethods.contains(.password) else {
+          print("Error: password auth not supported")
+          nextChallengePromise.fail(Error.passwordAuthenticationNotSupported)
+          return
+        }
+        
+        self.queue.async {
+          nextChallengePromise.succeed(.init(
+            username: self.username,
+            serviceName: "",
+            offer: .password(.init(password: password))
+          ))
+        }
+      } else if let privateKey = privateKey {
+        guard availableMethods.contains(.publicKey) else {
+          print("Error: public key auth not supported")
+          nextChallengePromise.fail(Error.publicKeyAuthenticationNotSupported)
+          return
+        }
+        
+        let key = try! Curve25519.Signing.PrivateKey(sshpemRepresentation: privateKey)
+        
+        self.queue.async {
+          nextChallengePromise.succeed(.init(
+            username: self.username,
+            serviceName: "",
+            offer: .privateKey(.init(privateKey: .init(ed25519Key: key)))
+          ))
+        }
+      } else {
+        fatalError()
       }
     }
   }
