@@ -1,3 +1,3 @@
 # SSH Tunnel Services
 
-Forward ports through SSH.
+Forward network traffic through Secure Shell.
