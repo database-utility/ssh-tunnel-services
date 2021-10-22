@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-  name: "SSHTunnelServices",
+  name: "ssh-tunnel-services",
   platforms: [
     .macOS(.v12),
     .iOS(.v15),
