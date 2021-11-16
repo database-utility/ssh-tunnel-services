@@ -1,6 +1,7 @@
 import Crypto
 import Foundation
 
+@available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)
 public enum SSHKey {
   case ed25519(Curve25519.Signing.PrivateKey)
   case p256(P256.Signing.PrivateKey)

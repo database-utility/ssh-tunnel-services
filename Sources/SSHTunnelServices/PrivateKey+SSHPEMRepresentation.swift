@@ -1,6 +1,7 @@
 import Crypto
 import Foundation
 
+@available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)
 public extension Curve25519.Signing.PrivateKey {
   init(sshpemRepresentation: String) throws {
     let base64 = sshpemRepresentation.split(separator: "\n").dropFirst().dropLast().joined()

@@ -4,6 +4,7 @@ import Foundation
 import NIO
 import NIOSSH
 
+@available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)
 public class SSHTunnel {
   private let group: EventLoopGroup
   private var serverChannel: Channel!
