@@ -1,13 +1,13 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.3
 import PackageDescription
 
 let package = Package(
   name: "ssh-tunnel-services",
   platforms: [
-    .macOS(.v12),
-    .iOS(.v15),
-    .watchOS(.v8),
-    .tvOS(.v15),
+    .macOS(.v11),
+    .iOS(.v14),
+    .watchOS(.v7),
+    .tvOS(.v14),
   ],
   products: [
     .library(name: "SSHTunnelServices", targets: ["SSHTunnelServices"]),
