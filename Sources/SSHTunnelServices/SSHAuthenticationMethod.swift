@@ -1,7 +1,7 @@
 import Foundation
 
 @available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)
-public enum SSHAuthenticationMethod: String, CaseIterable, Identifiable, Encodable {
+public enum SSHAuthenticationMethod: String, CaseIterable, Identifiable, Codable {
   case password
   case ed25519Key
   case p256Key
