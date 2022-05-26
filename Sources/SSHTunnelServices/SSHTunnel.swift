@@ -4,13 +4,23 @@ import Foundation
 import NIO
 import NIOSSH
 
+/// The principal class for tunneling traffic through SSH.
 @available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)
 public class SSHTunnel {
   private let group: EventLoopGroup
   private var serverChannel: Channel!
   
+  /// The local TCP/IP port end of the tunnel.
+  ///
+  /// Connect to this port to connect through the tunnel.
   public var localPort: Int = -1
   
+  /// Creates an SSH tunnel instance with the specified properties and credentials.
+  /// - Parameters:
+  ///   - host: The hostname of the tunnel server.
+  ///   - port: The port of the tunnel server.
+  ///   - targetHost: The hostname of the target host.
+  ///   - targetPort: The port of the target host.
   public init(
     host: String,
     port: Int,
@@ -87,6 +97,9 @@ public class SSHTunnel {
 //    }
   }
   
+  /// Stop the SSH tunnel.
+  ///
+  /// Call this method to stop the SSH tunnel.
   public func disconnect() {
     try? group.syncShutdownGracefully()
   }
@@ -97,11 +110,17 @@ public class SSHTunnel {
 //    print("done running server")
 //  }
   
+  /// An SSH tunnel error.
   public enum Error: Swift.Error {
+    /// Password authentication not supported error.
     case passwordAuthenticationNotSupported
+    /// Public key authentication not supported error.
     case publicKeyAuthenticationNotSupported
+    /// Invalid channel type error.
     case invalidChannelType
+    /// Invalid data error.
     case invalidData
+    /// Other error.
     case other
   }
   

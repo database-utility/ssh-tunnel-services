@@ -1,11 +1,18 @@
 import Foundation
 
+/// SSH authentication methods used to authenticate with the SSH server.
 @available(macOS 11, iOS 14, watchOS 7, tvOS 14, *)
 public enum SSHAuthenticationMethod: String, CaseIterable, Identifiable, Codable {
+  /// Password.
   case password
+  /// Edwards 25519 curve.
   case ed25519Key
+  /// NIST P-256.
+  /// Only keys of this type can be saved in the Secure Element.
   case p256Key
+  /// NIST P-384.
   case p384Key
+  /// NIST P-521.
   case p521Key
   
   public var id: String { rawValue }

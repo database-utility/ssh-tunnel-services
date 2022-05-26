@@ -8,7 +8,7 @@ This frameworks allows you to tunnel a TCP/IP port using the Secure Shell (SSH) 
 
 ## Topics
 
-### Creating an SSH Tunnel
+### Creating a Tunnel
 
 - ``SSHTunnel``
 
