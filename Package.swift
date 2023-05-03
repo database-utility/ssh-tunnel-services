@@ -13,7 +13,7 @@ let package = Package(
     .library(name: "SSHTunnelServices", targets: ["SSHTunnelServices"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-crypto.git", from: "1.1.6"),
+    .package(url: "https://github.com/apple/swift-crypto.git", from: "2.2.4"),
     .package(url: "https://github.com/apple/swift-nio.git", from: "2.30.0"),
     .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.3.0"),
   ],
